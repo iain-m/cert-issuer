@@ -5,7 +5,7 @@ import shutil
 
 import glob2
 from cert_core import Chain, UnknownChainError
-from pycoin.serialize import b2h, h2b
+from pycoin.encoding.hexbytes import b2h, h2b
 
 from cert_issuer.errors import NoCertificatesFoundError
 
@@ -100,3 +100,25 @@ def to_pycoin_chain(chain):
         return 'BTC'
     else:
         raise UnknownChainError(chain.name)
+
+def tx_to_blink(chain, tx_id):
+    blink = 'blink:'
+    if chain == Chain.bitcoin_regtest:
+        blink += 'btc:regtest:'
+    elif chain == Chain.bitcoin_testnet:
+        blink += 'btc:testnet:'
+    elif chain == Chain.bitcoin_mainnet:
+        blink += 'btc:mainnet:'
+    elif chain == Chain.ethereum_ropsten:
+        blink += 'eth:ropsten:'
+    elif chain == Chain.ethereum_goerli:
+        blink += 'eth:goerli:'
+    elif chain == Chain.ethereum_sepolia:
+        blink += 'eth:sepolia:'
+    elif chain == Chain.ethereum_mainnet:
+        blink += 'eth:mainnet:'
+    elif chain == Chain.mockchain:
+        blink += 'mocknet:'
+    else:
+        raise UnknownChainError(chain.name)
+    return blink + tx_id

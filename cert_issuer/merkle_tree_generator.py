@@ -1,8 +1,12 @@
 import hashlib
+import logging
+from datetime import datetime
 
 from cert_core import Chain
-from chainpoint.chainpoint import MerkleTools
-from pycoin.serialize import h2b
+from blockcerts_merkletools import MerkleTools
+from pycoin.encoding.hexbytes import h2b
+from lds_merkle_proof_2019.merkle_proof_2019 import MerkleProof2019
+from cert_issuer import helpers
 
 
 def hash_byte_array(data):
@@ -59,21 +63,23 @@ class MerkleTreeGenerator(object):
                     dict2[key] = ensure_string(value)
                 proof2.append(dict2)
             target_hash = ensure_string(self.tree.get_leaf(index))
-            merkle_proof = {
-                "type": ['MerkleProof2017', 'Extension'],
-                "merkleRoot": root,
-                "targetHash": target_hash,
-                "proof": proof2,
-                "anchors": [{
-                    "sourceId": to_source_id(tx_id, chain),
-                    "type": chain.blockchain_type.external_display_value,
-                    "chain": chain.external_display_value
-                }]}
-            yield merkle_proof
+            mp2019 = MerkleProof2019()
+            merkle_json = {
+                  "path": proof2,
+                  "merkleRoot": root,
+                  "targetHash": target_hash,
+                  "anchors": [
+                    helpers.tx_to_blink(chain, tx_id)
+                  ]
+                }
+            logging.info('merkle_json: %s', str(merkle_json))
+
+            proof_value = mp2019.encode(merkle_json)
+            yield proof_value
 
 
 def to_source_id(txid, chain):
-    if chain == Chain.bitcoin_mainnet or Chain.bitcoin_testnet or Chain.ethereum_mainnet or Chain.ethereum_ropsten:
+    if chain.is_bitcoin_type() or chain.is_ethereum_type():
         return txid
     else:
         return 'This has not been issued on a blockchain and is for testing only'

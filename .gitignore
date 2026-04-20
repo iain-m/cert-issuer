@@ -20,11 +20,11 @@ data/work/*
 data*/*
 dist/*
 build/*
+node_modules/*
 
 requirements.txt
 .idea/*
 *.ini*
-pk_issuer.txt
 blockcerts testnet bitcoin address.txt
 .vscode/*
 .cache/*
@@ -32,4 +32,6 @@ blockcerts testnet bitcoin address.txt
 *.egg-info/*
 docs/_build/*
 site/*
+pk_issuer.txt
 priv*.txt
+pk.txt

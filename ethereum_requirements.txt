@@ -1,3 +1,1 @@
--r requirements.txt
-ethereum>=2.1.0
-rlp>=0.6.0
+web3>=5.28.0
